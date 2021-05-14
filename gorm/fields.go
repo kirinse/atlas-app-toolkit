@@ -126,7 +126,7 @@ func preload(db *gorm.DB, obj interface{}, assoc string) (*gorm.DB, error) {
 	for i, part := range assocPath {
 		sf, ok := objType.FieldByName(part)
 		if !ok {
-			return nil, fmt.Errorf("Cannot find %s in %s", part, objType)
+			return nil, fmt.Errorf("cannot find %s in %s", part, objType)
 		}
 		objType = indirectType(sf.Type)
 		if !isModel(objType) {
@@ -138,10 +138,10 @@ func preload(db *gorm.DB, obj interface{}, assoc string) (*gorm.DB, error) {
 				return db.Preload(assoc), nil
 			} else {
 				return db.Preload(assoc, func(db *gorm.DB) *gorm.DB {
-					return db.Order(DefaultSchemaNamer.ColumnName("", pos))
+					return db.Order(deprGormV1DBName(DefaultSchemaNamer, pos))
 				}), nil
 			}
 		}
 	}
-	return nil, fmt.Errorf("Cannot preload empty association")
+	return nil, fmt.Errorf("cannot preload empty association")
 }

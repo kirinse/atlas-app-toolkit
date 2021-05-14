@@ -22,13 +22,17 @@ var (
 	DefaultSchemaNamer schema.Namer = schema.NamingStrategy{}
 )
 
+func deprGormV1DBName(namer schema.Namer, s string) string {
+	return namer.ColumnName("", s)
+}
+
 // HandleFieldPath converts fieldPath to appropriate db string for use in where/order by clauses
 // according to obj GORM model. If fieldPath cannot be found in obj then original fieldPath is returned
 // to allow tables joined by a third party.
 // If association join is required to resolve the field path then it's name is returned as a second return value.
 func HandleFieldPath(ctx context.Context, fieldPath []string, obj interface{}) (string, string, error) {
 	if len(fieldPath) > 2 {
-		return "", "", fmt.Errorf("Field path longer than 2 is not supported")
+		return "", "", fmt.Errorf("field path longer than 2 is not supported")
 	}
 	dbPath, err := fieldPathToDBName(fieldPath, obj)
 	if err != nil {
@@ -114,7 +118,7 @@ func fieldPathToDBName(fieldPath []string, obj interface{}) (string, error) {
 		}
 		sf, ok := objType.FieldByName(cases.GoCamelCase(part))
 		if !ok {
-			return "", fmt.Errorf("Cannot find field %s in %s", part, objType)
+			return "", fmt.Errorf("cannot find field %s in %s", part, objType)
 		}
 		if i < pathLength-1 {
 			objType = indirectType(sf.Type)
@@ -140,7 +144,7 @@ func tableName(t reflect.Type) string {
 	if tn, ok := table.(tableNamer); ok {
 		return tn.TableName()
 	}
-	return inflection.Plural(DefaultSchemaNamer.ColumnName("", t.Name()))
+	return inflection.Plural(deprGormV1DBName(DefaultSchemaNamer, t.Name()))
 }
 
 func columnName(sf *reflect.StructField) string {
@@ -148,7 +152,7 @@ func columnName(sf *reflect.StructField) string {
 	if ex {
 		return tagCol
 	}
-	return DefaultSchemaNamer.ColumnName("", sf.Name)
+	return deprGormV1DBName(DefaultSchemaNamer, sf.Name)
 }
 
 func gormTag(sf *reflect.StructField, tag string) (bool, string) {
@@ -216,5 +220,5 @@ type EmptyFieldPathError struct {
 }
 
 func (e *EmptyFieldPathError) Error() string {
-	return fmt.Sprintf("Empty field path is not allowed")
+	return "empty field path is not allowed"
 }

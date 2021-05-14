@@ -48,7 +48,7 @@ of foreign keys in %s association`, objType, assoc)
 func parseParentChildAssoc(assoc string, assocChild bool, parent reflect.Type, child reflect.Type, assocKeys []string, fKeys []string) (string, string, []string, []string, error) {
 	parentTableName := tableName(parent)
 	childTableName := tableName(child)
-	alias := DefaultSchemaNamer.ColumnName("", assoc)
+	alias := deprGormV1DBName(DefaultSchemaNamer, assoc)
 	var dbAssocKeys, dbFKeys []string
 	for _, k := range assocKeys {
 		sf, ok := parent.FieldByName(k)

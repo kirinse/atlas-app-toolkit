@@ -127,7 +127,7 @@ func JoinAssociations(ctx context.Context, db *gorm.DB, assoc map[string]struct{
 		for i, k := range sourceKeys {
 			keyPairs = append(keyPairs, k+" = "+targetKeys[i])
 		}
-		alias := DefaultSchemaNamer.ColumnName("", k)
+		alias := deprGormV1DBName(DefaultSchemaNamer, k)
 		join := fmt.Sprintf("LEFT JOIN %s %s ON %s", tableName, alias, strings.Join(keyPairs, " AND "))
 		db = db.Joins(join)
 	}
