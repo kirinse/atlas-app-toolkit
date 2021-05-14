@@ -130,7 +130,7 @@ func (t *Transaction) beginWithContextAndOptions(ctx context.Context, opts *sql.
 	return t.current
 }
 
-// Rollback terminates transact`ion by calling `*gorm.DB.Rollback()`
+// Rollback terminates transaction by calling `*gorm.DB.Rollback()`
 // Reset current transaction and returns an error if any.
 func (t *Transaction) Rollback() error {
 	if t.current == nil {
