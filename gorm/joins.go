@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"reflect"
 	"strings"
 )
@@ -16,7 +15,7 @@ func JoinInfo(ctx context.Context, obj interface{}, assoc string) (string, []str
 	objType := indirectType(reflect.TypeOf(obj))
 	sf, ok := objType.FieldByName(assoc)
 	if !ok {
-		return "", nil, nil, fmt.Errorf("Cannot find field %s in %s", assoc, objType)
+		return "", nil, nil, fmt.Errorf("cannot find field %s in %s", assoc, objType)
 	}
 	ok, assocKey := gormTag(&sf, "association_foreignkey")
 	if !ok {
@@ -49,12 +48,12 @@ of foreign keys in %s association`, objType, assoc)
 func parseParentChildAssoc(assoc string, assocChild bool, parent reflect.Type, child reflect.Type, assocKeys []string, fKeys []string) (string, string, []string, []string, error) {
 	parentTableName := tableName(parent)
 	childTableName := tableName(child)
-	alias := gorm.ToDBName(assoc)
+	alias := DefaultSchemaNamer.ColumnName("", assoc)
 	var dbAssocKeys, dbFKeys []string
 	for _, k := range assocKeys {
 		sf, ok := parent.FieldByName(k)
 		if !ok {
-			return "", "", nil, nil, fmt.Errorf("Association key %s is not found in %s", k, parent)
+			return "", "", nil, nil, fmt.Errorf("association key %s is not found in %s", k, parent)
 		}
 		if assocChild {
 			dbAssocKeys = append(dbAssocKeys, parentTableName+"."+columnName(&sf))
@@ -66,7 +65,7 @@ func parseParentChildAssoc(assoc string, assocChild bool, parent reflect.Type, c
 	for _, k := range fKeys {
 		sf, ok := child.FieldByName(k)
 		if !ok {
-			return "", "", nil, nil, fmt.Errorf("Foreign key %s is not found in %s", k, child)
+			return "", "", nil, nil, fmt.Errorf("foreign key %s is not found in %s", k, child)
 		}
 		if assocChild {
 			dbFKeys = append(dbFKeys, alias+"."+columnName(&sf))

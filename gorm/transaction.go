@@ -8,10 +8,10 @@ import (
 	"sync"
 
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
-	"github.com/jinzhu/gorm"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 // ctxKey is an unexported type for keys defined in this package.
@@ -107,7 +107,7 @@ func (t *Transaction) beginWithContext(ctx context.Context) *gorm.DB {
 	defer t.mu.Unlock()
 
 	if t.current == nil {
-		t.current = t.parent.BeginTx(ctx, nil)
+		t.current = t.parent.Begin()
 	}
 
 	return t.current
@@ -124,26 +124,27 @@ func (t *Transaction) beginWithContextAndOptions(ctx context.Context, opts *sql.
 	defer t.mu.Unlock()
 
 	if t.current == nil {
-		t.current = t.parent.BeginTx(ctx, opts)
+		t.current = t.parent.Begin(opts)
 	}
 
 	return t.current
 }
 
-// Rollback terminates transaction by calling `*gorm.DB.Rollback()`
+// Rollback terminates transact`ion by calling `*gorm.DB.Rollback()`
 // Reset current transaction and returns an error if any.
 func (t *Transaction) Rollback() error {
 	if t.current == nil {
 		return nil
 	}
-	if reflect.ValueOf(t.current.CommonDB()).IsNil() {
+	db, err := t.current.DB()
+	if err != nil || reflect.ValueOf(db).IsNil() || db.Stats().OpenConnections == 0 {
 		return status.Error(codes.Unavailable, "Database connection not available")
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	t.current.Rollback()
-	err := t.current.Error
+	err = t.current.Error
 	t.current = nil
 	return err
 }
@@ -151,13 +152,20 @@ func (t *Transaction) Rollback() error {
 // Commit finishes transaction by calling `*gorm.DB.Commit()`
 // Reset current transaction and returns an error if any.
 func (t *Transaction) Commit(ctx context.Context) error {
-	if t.current == nil || reflect.ValueOf(t.current.CommonDB()).IsNil() {
+	if t.current == nil {
 		return nil
+	}
+	db, err := t.current.DB()
+	if err != nil {
+		return err
+	}
+	if reflect.ValueOf(db).IsNil() {
+		return errors.New("no database connection")
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	t.current.Commit()
-	err := t.current.Error
+	err = t.current.Error
 	if err == nil {
 		for i := range t.afterCommitHook {
 			t.afterCommitHook[i](ctx)

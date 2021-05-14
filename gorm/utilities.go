@@ -8,14 +8,18 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/generator"
-	jgorm "github.com/jinzhu/gorm"
-	"github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/jinzhu/inflection"
+	"gorm.io/datatypes"
+	"gorm.io/gorm/schema"
 
 	"time"
 
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
+	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
+)
+
+var (
+	DefaultSchemaNamer schema.Namer = schema.NamingStrategy{}
 )
 
 // HandleFieldPath converts fieldPath to appropriate db string for use in where/order by clauses
@@ -36,7 +40,7 @@ func HandleFieldPath(ctx context.Context, fieldPath []string, obj interface{}) (
 		}
 	}
 	if len(fieldPath) == 2 {
-		return dbPath, generator.CamelCase(fieldPath[0]), nil
+		return dbPath, cases.GoCamelCase(fieldPath[0]), nil
 	}
 	return dbPath, "", nil
 }
@@ -84,16 +88,16 @@ func isRawJSON(values ...string) bool {
 
 //TODO: add supprt for embeded objects
 func IsJSONCondition(ctx context.Context, fieldPath []string, obj interface{}) bool {
-	fieldName := generator.CamelCase(fieldPath[0])
+	fieldName := cases.GoCamelCase(fieldPath[0])
 	objType := indirectType(reflect.TypeOf(obj))
 	field, ok := objType.FieldByName(fieldName)
 	if !ok {
 		return false
 	}
 
-	fInterface := reflect.Zero(indirectType(field.Type)).Interface()
+	fInterface := reflect.Zero(field.Type).Interface()
 	switch fInterface.(type) {
-	case postgres.Jsonb:
+	case datatypes.JSON:
 		return true
 	}
 
@@ -108,7 +112,7 @@ func fieldPathToDBName(fieldPath []string, obj interface{}) (string, error) {
 		if !isModel(objType) {
 			return "", fmt.Errorf("%s: non-last field of %s field path should be a model", objType, fieldPath)
 		}
-		sf, ok := objType.FieldByName(generator.CamelCase(part))
+		sf, ok := objType.FieldByName(cases.GoCamelCase(part))
 		if !ok {
 			return "", fmt.Errorf("Cannot find field %s in %s", part, objType)
 		}
@@ -136,7 +140,7 @@ func tableName(t reflect.Type) string {
 	if tn, ok := table.(tableNamer); ok {
 		return tn.TableName()
 	}
-	return inflection.Plural(jgorm.ToDBName(t.Name()))
+	return inflection.Plural(DefaultSchemaNamer.ColumnName("", t.Name()))
 }
 
 func columnName(sf *reflect.StructField) string {
@@ -144,7 +148,7 @@ func columnName(sf *reflect.StructField) string {
 	if ex {
 		return tagCol
 	}
-	return jgorm.ToDBName(sf.Name)
+	return DefaultSchemaNamer.ColumnName("", sf.Name)
 }
 
 func gormTag(sf *reflect.StructField, tag string) (bool, string) {

@@ -7,10 +7,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/golang/protobuf/protoc-gen-go/generator"
-	"github.com/jinzhu/gorm"
+	gorm "gorm.io/gorm"
 
 	"github.com/infobloxopen/atlas-app-toolkit/query"
+	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
 )
 
 // DefaultFieldSelectionConverter performs default convertion for FieldSelection collection operator
@@ -76,14 +76,14 @@ fields:
 }
 
 func handlePreloads(f *query.Field, objType reflect.Type) ([]string, error) {
-	sf, ok := objType.FieldByName(generator.CamelCase(f.GetName()))
+	sf, ok := objType.FieldByName(cases.GoCamelCase(f.GetName()))
 	if !ok {
 		return nil, nil
 	}
 	fType := indirectType(sf.Type)
 	if f.GetSubs() == nil {
 		if isModel(fType) {
-			return []string{generator.CamelCase(f.GetName())}, nil
+			return []string{cases.GoCamelCase(f.GetName())}, nil
 		} else {
 			return nil, nil
 		}
@@ -100,11 +100,11 @@ func handlePreloads(f *query.Field, objType reflect.Type) ([]string, error) {
 			return nil, err
 		}
 		for i, e := range subPreload {
-			subPreload[i] = generator.CamelCase(f.GetName()) + "." + e
+			subPreload[i] = cases.GoCamelCase(f.GetName()) + "." + e
 		}
 		toPreload = append(toPreload, subPreload...)
 	}
-	return append(toPreload, generator.CamelCase(f.GetName())), nil
+	return append(toPreload, cases.GoCamelCase(f.GetName())), nil
 }
 
 func getSortedFieldNames(fields map[string]*query.Field) []string {
@@ -138,7 +138,7 @@ func preload(db *gorm.DB, obj interface{}, assoc string) (*gorm.DB, error) {
 				return db.Preload(assoc), nil
 			} else {
 				return db.Preload(assoc, func(db *gorm.DB) *gorm.DB {
-					return db.Order(gorm.ToDBName(pos))
+					return db.Order(DefaultSchemaNamer.ColumnName("", pos))
 				}), nil
 			}
 		}

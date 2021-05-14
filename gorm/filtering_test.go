@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/datatypes"
 
 	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
@@ -19,7 +19,7 @@ type Entity struct {
 	NestedEntity NestedEntity
 	Id           string
 	Ref          *string
-	Tags         *postgres.Jsonb
+	Tags         datatypes.JSON
 }
 
 type EntityProto struct {
@@ -326,10 +326,12 @@ func TestGormFiltering(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		gorm, args, assoc, err := FilterStringToGorm(context.Background(), test.rest, &Entity{}, &EntityProto{})
-		assert.Equal(t, test.gorm, gorm)
-		assert.Equal(t, test.args, args)
-		assert.Equal(t, test.assoc, assoc)
-		assert.IsType(t, test.err, err)
+		t.Run(test.rest, func(t *testing.T) {
+			gorm, args, assoc, err := FilterStringToGorm(context.Background(), test.rest, &Entity{}, &EntityProto{})
+			assert.Equal(t, test.gorm, gorm)
+			assert.Equal(t, test.args, args)
+			assert.Equal(t, test.assoc, assoc)
+			assert.IsType(t, test.err, err)
+		})
 	}
 }

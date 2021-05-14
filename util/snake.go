@@ -1,16 +1,10 @@
 package util
 
 import (
-	"regexp"
-	"strings"
+	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
 )
 
-var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
-
-// CamelToSnake takes a camelcase string and returns a snake case string.
+// CamelToSnake is deprecated, use github.com/infobloxopen/util/cases.CamelToSnake.
 func CamelToSnake(str string) string {
-	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
-	return strings.ToLower(snake)
+	return cases.CamelToSnake(str)
 }
