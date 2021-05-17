@@ -1,4 +1,4 @@
-package util
+package cases
 
 import "testing"
 

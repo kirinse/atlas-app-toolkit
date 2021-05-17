@@ -8,15 +8,23 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/generator"
-	jgorm "github.com/jinzhu/gorm"
-	"github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/jinzhu/inflection"
+	"gorm.io/datatypes"
+	"gorm.io/gorm/schema"
 
 	"time"
 
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
+	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
 )
+
+var (
+	DefaultSchemaNamer schema.Namer = schema.NamingStrategy{}
+)
+
+func deprGormV1DBName(namer schema.Namer, s string) string {
+	return namer.ColumnName("", s)
+}
 
 // HandleFieldPath converts fieldPath to appropriate db string for use in where/order by clauses
 // according to obj GORM model. If fieldPath cannot be found in obj then original fieldPath is returned
@@ -24,7 +32,7 @@ import (
 // If association join is required to resolve the field path then it's name is returned as a second return value.
 func HandleFieldPath(ctx context.Context, fieldPath []string, obj interface{}) (string, string, error) {
 	if len(fieldPath) > 2 {
-		return "", "", fmt.Errorf("Field path longer than 2 is not supported")
+		return "", "", fmt.Errorf("field path longer than 2 is not supported")
 	}
 	dbPath, err := fieldPathToDBName(fieldPath, obj)
 	if err != nil {
@@ -36,7 +44,7 @@ func HandleFieldPath(ctx context.Context, fieldPath []string, obj interface{}) (
 		}
 	}
 	if len(fieldPath) == 2 {
-		return dbPath, generator.CamelCase(fieldPath[0]), nil
+		return dbPath, cases.GoCamelCase(fieldPath[0]), nil
 	}
 	return dbPath, "", nil
 }
@@ -84,16 +92,16 @@ func isRawJSON(values ...string) bool {
 
 //TODO: add supprt for embeded objects
 func IsJSONCondition(ctx context.Context, fieldPath []string, obj interface{}) bool {
-	fieldName := generator.CamelCase(fieldPath[0])
+	fieldName := cases.GoCamelCase(fieldPath[0])
 	objType := indirectType(reflect.TypeOf(obj))
 	field, ok := objType.FieldByName(fieldName)
 	if !ok {
 		return false
 	}
 
-	fInterface := reflect.Zero(indirectType(field.Type)).Interface()
+	fInterface := reflect.Zero(field.Type).Interface()
 	switch fInterface.(type) {
-	case postgres.Jsonb:
+	case datatypes.JSON:
 		return true
 	}
 
@@ -108,9 +116,9 @@ func fieldPathToDBName(fieldPath []string, obj interface{}) (string, error) {
 		if !isModel(objType) {
 			return "", fmt.Errorf("%s: non-last field of %s field path should be a model", objType, fieldPath)
 		}
-		sf, ok := objType.FieldByName(generator.CamelCase(part))
+		sf, ok := objType.FieldByName(cases.GoCamelCase(part))
 		if !ok {
-			return "", fmt.Errorf("Cannot find field %s in %s", part, objType)
+			return "", fmt.Errorf("cannot find field %s in %s", part, objType)
 		}
 		if i < pathLength-1 {
 			objType = indirectType(sf.Type)
@@ -136,7 +144,7 @@ func tableName(t reflect.Type) string {
 	if tn, ok := table.(tableNamer); ok {
 		return tn.TableName()
 	}
-	return inflection.Plural(jgorm.ToDBName(t.Name()))
+	return inflection.Plural(deprGormV1DBName(DefaultSchemaNamer, t.Name()))
 }
 
 func columnName(sf *reflect.StructField) string {
@@ -144,7 +152,7 @@ func columnName(sf *reflect.StructField) string {
 	if ex {
 		return tagCol
 	}
-	return jgorm.ToDBName(sf.Name)
+	return deprGormV1DBName(DefaultSchemaNamer, sf.Name)
 }
 
 func gormTag(sf *reflect.StructField, tag string) (bool, string) {
@@ -212,5 +220,5 @@ type EmptyFieldPathError struct {
 }
 
 func (e *EmptyFieldPathError) Error() string {
-	return fmt.Sprintf("Empty field path is not allowed")
+	return "empty field path is not allowed"
 }

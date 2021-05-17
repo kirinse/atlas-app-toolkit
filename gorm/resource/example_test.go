@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	resourcepb "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
-	"github.com/infobloxopen/atlas-app-toolkit/util"
+	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
 )
 
 type ExampleGoType struct {
@@ -105,7 +105,7 @@ func Example() {
 	}
 
 	fmt.Printf("application name of internal id: %s\n", pb.Id.GetApplicationName())
-	fmt.Printf("resource type of internal id: %s\n", util.CamelToSnake(pb.Id.GetResourceType()))
+	fmt.Printf("resource type of internal id: %s\n", cases.CamelToSnake(pb.Id.GetResourceType()))
 	fmt.Printf("resource id of internal id: %s\n", pb.Id.GetResourceId())
 	fmt.Printf("application name of fqstring id: %s\n", pb.ExternalId.GetApplicationName())
 	fmt.Printf("resource type of fqstring id: %s\n", pb.ExternalId.GetResourceType())
