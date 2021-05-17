@@ -27,5 +27,6 @@ require (
 
 replace (
 	github.com/golang/protobuf => github.com/golang/protobuf v1.3.5
+	github.com/infobloxopen/atlas-app-toolkit => github.com/edhaight/atlas-app-toolkit v1.1.0-alpha
 	google.golang.org/genproto => google.golang.org/genproto v0.0.0-20200225123651-fc8f55426688
 )
