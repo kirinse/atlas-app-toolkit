@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
+	"github.com/kirinse/atlas-app-toolkit/util/cases"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"

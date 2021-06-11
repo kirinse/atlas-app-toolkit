@@ -14,8 +14,8 @@ import (
 
 	"time"
 
-	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
-	"github.com/infobloxopen/atlas-app-toolkit/util/cases"
+	"github.com/kirinse/atlas-app-toolkit/rpc/resource"
+	"github.com/kirinse/atlas-app-toolkit/util/cases"
 )
 
 var (

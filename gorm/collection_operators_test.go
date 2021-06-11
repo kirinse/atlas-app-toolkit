@@ -13,8 +13,8 @@ import (
 	pg "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
-	"github.com/infobloxopen/atlas-app-toolkit/query"
+	"github.com/kirinse/atlas-app-toolkit/gateway"
+	"github.com/kirinse/atlas-app-toolkit/query"
 )
 
 type Person struct {

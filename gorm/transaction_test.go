@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/infobloxopen/atlas-app-toolkit/rpc/errdetails"
+	"github.com/kirinse/atlas-app-toolkit/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	pg "gorm.io/driver/postgres"
