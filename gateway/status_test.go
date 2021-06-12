@@ -2,15 +2,13 @@ package gateway
 
 import (
 	"context"
-	"net/http"
-	"testing"
-
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"net/http"
+	"testing"
 )
 
 func TestStatus(t *testing.T) {

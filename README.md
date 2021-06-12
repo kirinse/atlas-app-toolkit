@@ -167,9 +167,9 @@ protoc -I/usr/local/include -I. \
 ##### How to add Swagger definitions in my proto scheme?
 
 ```proto
-import "protoc-gen-swagger/options/annotations.proto";
+import "protoc_gen_openapiv2/options/annotations.proto";
 
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "My Service";
     version: "1.0";
@@ -181,7 +181,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
 };
 
 message MyMessage {
-  option (grpc.gateway.protoc_gen_swagger.options.openapiv2_schema) = {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_schema) = {
     external_docs: {
       url: "https://infoblox.com/docs/mymessage";
       description: "MyMessage description";

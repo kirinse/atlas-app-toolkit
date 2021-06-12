@@ -3,17 +3,16 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 func TestAnnotator(t *testing.T) {

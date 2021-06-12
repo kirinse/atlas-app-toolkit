@@ -30,7 +30,7 @@ func Example() {
 	}
 
 	grpcServer := grpc.NewServer()
-	server_test.RegisterHelloServer(grpcServer, &server_test.HelloServerImpl{})
+	server_test.RegisterHelloServer(grpcServer, &server_test.UnimplementedHelloServer{})
 
 	healthChecks := health.NewChecksHandler("healthz", "ready")
 	healthChecks.AddLiveness("grpc", func() error {

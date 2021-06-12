@@ -58,7 +58,7 @@ import (
     "context"
 
     "google.golang.org/grpc/metadata"
-    "github.com/grpc-ecosystem/grpc-gateway/runtime"
+    "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 )
 
 func (s *myServiceImpl) MyMethod(ctx context.Context, req *MyRequest) (*MyResponse, error) {
@@ -335,7 +335,7 @@ Here's an example that shows how to use [`DefaultProtoErrorHandler`](gateway/err
 
 ```go
 import (
-    "github.com/grpc-ecosystem/grpc-gateway/runtime"
+    "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
     "github.com/kirinse/atlas-app-toolkit/gateway"
 
     "github.com/yourrepo/yourapp"

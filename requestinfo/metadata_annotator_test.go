@@ -2,7 +2,7 @@ package requestinfo
 
 import (
 	"context"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/kirinse/atlas-app-toolkit/rpc/resource"
 	"google.golang.org/grpc/metadata"
 	"io"

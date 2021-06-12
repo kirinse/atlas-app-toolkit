@@ -2,20 +2,15 @@ package server
 
 import (
 	"context"
-	"net"
-
-	"net/http"
-
-	"sync"
-
-	"time"
-
 	"errors"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/kirinse/atlas-app-toolkit/gateway"
 	"github.com/kirinse/atlas-app-toolkit/health"
 	"google.golang.org/grpc"
+	"net"
+	"net/http"
+	"sync"
+	"time"
 )
 
 var (

@@ -5,16 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	"google.golang.org/grpc/metadata"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
 
 type user struct {
@@ -258,7 +257,14 @@ func TestForwardResponseMessageWithNil(t *testing.T) {
 
 	rw := httptest.NewRecorder()
 	ForwardResponseMessage(
-		ctx, nil, &runtime.JSONPb{OrigName: true, EmitDefaults: true}, rw, nil,
+		ctx, nil, &runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				UseProtoNames: true,
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: false,
+			},
+		}, rw, nil,
 		&userWithPtrResult{Results: &userWithPtr{PtrValue: nil}},
 	)
 

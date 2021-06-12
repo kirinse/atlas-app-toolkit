@@ -2,25 +2,23 @@ package gateway
 
 import (
 	"context"
-	"net/http"
-
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"net/http"
 )
 
-// OldStatesCreatedOnUpdate if true will return http.StatusCreated from HTTPStatusFromCode
+// OldStatusCreatedOnUpdate if true will return http.StatusCreated from HTTPStatusFromCode
 // function if gRPC code is equal to Updated. This variable should only be set in an init()
 // function by code that vendors this library.
 var OldStatusCreatedOnUpdate = false
 
 const (
-	// These custom codes defined here to conform REST API Syntax
+	// Created These custom codes defined here to conform REST API Syntax
 	// It is supposed that you do not send them over the wire as part of gRPC Status,
 	// because they will be treated as Unknown by gRPC library.
 	// You should use them to send successfull status of your RPC method

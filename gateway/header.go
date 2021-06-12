@@ -3,13 +3,11 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc/metadata"
 	"net/http"
 	"net/textproto"
 	"strings"
-
-	"google.golang.org/grpc/metadata"
-
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
 
 const XForwardedFor = "X-Forwarded-For"
