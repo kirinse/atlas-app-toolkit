@@ -15,7 +15,7 @@ First of all you need build yor plugin and patch [gentool](https://github.com/in
      
      LABEL stage=server-intermediate
      
-     WORKDIR /go/src/github.com/infobloxopen/protoc-gen-atlas-validate
+     WORKDIR /go/src/github.com/kirinse/protoc-gen-atlas-validate
      COPY . .
      RUN CGO_ENABLED=0 GOOS=linux go build -o /out/usr/bin/protoc-gen-atlas-validate main.go
      
@@ -31,7 +31,7 @@ First of all you need build yor plugin and patch [gentool](https://github.com/in
 Example shows how you can prepare docker file to patch [protoc-gen-atlas-validate](https://github.com/infobloxopen/protoc-gen-atlas-validate) plugin in latest gentool images. To build this example you need use command presented below:
 
 ```bash 
-docker build -f Dockerfile -t infoblox/atlas-gentool:test-plugin $GOPATH/src/github.com/infobloxopen/protoc-gen-atlas-validate
+docker build -f Dockerfile -t infoblox/atlas-gentool:test-plugin $GOPATH/src/github.com/kirinse/protoc-gen-atlas-validate
 ```
 **NOTE:** Be careful with this command as it uses some docker tricks. It uses `-f` to specif Docker file and passes project path as build scope to Docker daemon
 
